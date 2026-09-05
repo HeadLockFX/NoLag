@@ -1,3 +1,21 @@
+--!nonstrict
+--[[
+    ========================================================================
+    ⚡ NO-LAG KEY SYSTEM (Monochrome Edition)
+    ========================================================================
+    Sistem Key Roblox modern, ringan, dan mudah dibaca.
+    
+    Fitur Utama:
+    - Modular UI Library (validasi via callback Validate / OnSubmit)
+    - Desain Monochrome Black & White modern dan elegan
+    - Tombol Discord & Tutorial berbentuk teks bersih di bagian bawah
+    - Keluar / Tutup UI kapan saja dengan perintah: _G.Exit = true
+    - Smooth dragging (Mendukung PC mouse & Mobile touch)
+    - Animasi input error shake & status loading spinner
+    - Penyimpanan key otomatis (SaveKey)
+    ========================================================================
+]]
+
 -- ============================================================================
 -- 1. PENGATURAN / CONFIGURATION (Ubah pengaturan di sini)
 -- ============================================================================
@@ -130,10 +148,6 @@ function KeySystem.new(configOverride: {[string]: any}?)
     if configOverride then
         for k, v in pairs(configOverride) do
             config[k] = v
-        end
-        if configOverride.ScriptId then
-            config.Luaprot = table.clone(config.Luaprot or CONFIG.Luaprot)
-            config.Luaprot.ScriptId = configOverride.ScriptId
         end
     end
 
@@ -786,11 +800,6 @@ function KeySystem:Hide()
     end
     self._isOpen = false
     return self
-end
-
-function KeySystem.Show(configOverride: {[string]: any}?)
-    local instance = KeySystem.new(configOverride)
-    return instance:Show()
 end
 
 function KeySystem:Close()
