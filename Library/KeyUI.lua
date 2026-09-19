@@ -158,9 +158,10 @@ function KeySystem:_BuildUI()
     local container = config.Parent or defaultParent()
 
     -- Hapus instance lama jika ada
-    local oldGui = container:FindFirstChild("NoLag_KeySystem_Window")
-    if oldGui then
-        oldGui:Destroy()
+    for _, child in ipairs(container:GetChildren()) do
+        if child.Name == "NoLag_KeySystem_Window" then
+            child:Destroy()
+        end
     end
 
     -- ScreenGui (starts hidden until :Show() is called)
@@ -797,12 +798,16 @@ function KeySystem:Close()
         Size = UDim2.fromOffset(340, 310),
     }, 0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
 
-    anim.Completed:Connect(function()
+    local function cleanup()
+        if self._destroyed then return end
         if self._config.OnClose then
             pcall(self._config.OnClose)
         end
         self:Destroy()
-    end)
+    end
+
+    anim.Completed:Connect(cleanup)
+    task.delay(0.3, cleanup)
 end
 
 function KeySystem:Notify(message: string, duration: number?, isError: boolean?)
@@ -903,10 +908,15 @@ function KeySystem:RedeemKey()
             self:_SaveKey(enteredKey)
 
             task.delay(0.85, function()
-                if self._config.OnSuccess then
-                    pcall(self._config.OnSuccess, keyData, enteredKey)
-                end
                 self:Close()
+                if self._config.OnSuccess then
+                    task.spawn(function()
+                        local ok, err = pcall(self._config.OnSuccess, keyData, enteredKey)
+                        if not ok then
+                            warn("[No-Lag] OnSuccess error:", err)
+                        end
+                    end)
+                end
             end)
         else
             -- Key Invalid State
